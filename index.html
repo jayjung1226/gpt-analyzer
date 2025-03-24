@@ -145,7 +145,7 @@
       output.textContent = "⏳ GPT에게 분석 요청 중...";
 
       try {
-        const res = await fetch("/analyze", {
+        const res = await fetch("https://gpt-analyzer.vercel.app/analyze", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
