@@ -1,0 +1,16 @@
+# 민감한 설정
+.env
+
+# Vercel 환경
+.vercel
+
+# Node.js 관련
+node_modules/
+dist/
+
+# macOS, VSCode 같은 툴
+.DS_Store
+.vscode/
+
+# 로그
+*.log
