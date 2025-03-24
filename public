@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>연말정산 분석 GPT</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: sans-serif;
+      background: #f6f7f8;
+      padding: 40px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    input, select, button {
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      width: 100%;
+      margin-top: 24px;
+      background: #007BFF;
+      color: white;
+      cursor: pointer;
+      grid-column: span 2;
+    }
+    .output {
+      margin-top: 24px;
+      padding: 16px;
+      background: #f1f3f5;
+      border-radius: 8px;
+      min-height: 60px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>2025 연말정산 분석 도우미</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>생년월일</label>
+        <input type="date" id="birth">
+      </div>
+      <div class="form-group">
+        <label>성별</label>
+        <select id="gender">
+          <option value="male">남성</option>
+          <option value="female">여성</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>혼인여부</label>
+        <select id="marital">
+          <option value="single">미혼</option>
+          <option value="married">기혼</option>
+          <option value="widowed">사별</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>부양가족 수</label>
+        <input type="number" id="dependents" placeholder="예: 3">
+      </div>
+      <div class="form-group">
+        <label>세대주 여부</label>
+        <select id="householder">
+          <option value="예">예</option>
+          <option value="아니오">아니오</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>총급여 (원)</label>
+        <input type="number" id="salary" placeholder="예: 116295170">
+      </div>
+      <div class="form-group">
+        <label>상여금 (원)</label>
+        <input type="number" id="bonus" placeholder="예: 717252">
+      </div>
+      <div class="form-group">
+        <label>성과급 (원)</label>
+        <input type="number" id="incentive" placeholder="예: 2304863">
+      </div>
+      <div class="form-group">
+        <label>기타소득 (원)</label>
+        <input type="number" id="etcIncome" placeholder="예: 4702013">
+      </div>
+      <div class="form-group">
+        <label>신용카드 (원)</label>
+        <input type="number" id="credit" placeholder="예: 11622148">
+      </div>
+      <div class="form-group">
+        <label>체크카드 (원)</label>
+        <input type="number" id="checkcard" placeholder="예: 2644587">
+      </div>
+      <div class="form-group">
+        <label>전통시장 (원)</label>
+        <input type="number" id="market" placeholder="예: 1046472">
+      </div>
+      <div class="form-group">
+        <label>대중교통 (원)</label>
+        <input type="number" id="transport" placeholder="예: 1808162">
+      </div>
+      <div class="form-group">
+        <label>도서/공연 등 (원)</label>
+        <input type="number" id="culture" placeholder="예: 1322307">
+      </div>
+      <div class="form-group">
+        <label>제로페이 (원)</label>
+        <input type="number" id="zeropay" placeholder="예: 1311538">
+      </div>
+      <button onclick="analyze()">GPT에게 분석 요청</button>
+    </div>
+    <div class="output" id="output">분석 결과가 여기에 표시됩니다.</div>
+  </div>
+
+  <script>
+    async function analyze() {
+      const prompt = `[기본정보]\n- 생년월일: ${birth.value}\n- 성별: ${gender.value}\n- 혼인여부: ${marital.value}\n- 부양가족 수: ${dependents.value}\n- 세대주 여부: ${householder.value}\n\n[소득정보]\n- 총급여: ${salary.value}원\n- 상여금: ${bonus.value}원\n- 성과급: ${incentive.value}원\n- 기타소득: ${etcIncome.value}원\n\n[신용카드 등 사용내역]\n- 신용카드: ${credit.value}원\n- 체크카드: ${checkcard.value}원\n- 전통시장: ${market.value}원\n- 대중교통: ${transport.value}원\n- 도서/공연 등: ${culture.value}원\n- 제로페이: ${zeropay.value}원\n\n위 정보를 바탕으로, 2025년 최신 대한민국 세법을 적용한 연말정산 분석 보고서를 작성해줘.`;
+
+      const output = document.getElementById("output");
+      output.textContent = "⏳ GPT에게 분석 요청 중...";
+
+      try {
+        const res = await fetch("/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            messages: [
+              { role: "user", content: prompt }
+            ]
+          })
+        });
+
+        const data = await res.json();
+        if (data.choices && data.choices[0]) {
+          output.textContent = "✅ 분석 결과:\n\n" + data.choices[0].message.content;
+        } else {
+          output.textContent = "❌ GPT 응답 없음\n" + JSON.stringify(data, null, 2);
+        }
+      } catch (err) {
+        output.textContent = "❌ 에러 발생: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
