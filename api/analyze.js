@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       "Authorization": `Bearer ${apiKey}`
     },
     body: JSON.stringify({
-      model: "ft:gpt-3.5-turbo-0125:beflex-inc:tax-v1:BEcDeh6s",
+      model: "ft:gpt-3.5-turbo-0125:beflex-inc:tax-v2:BEvcOeC8",
       messages: req.body.messages
     })
   });
